@@ -1,0 +1,138 @@
+---
+swagger: "2.0"
+info:
+  description: "No description"
+  version: "1.0.0"
+  title: "RESTaurant"
+  contact: {}
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /restaurants:
+    get:
+      summary: "List Restaurants"
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        type: "string"
+        description: "to paginate the api"
+      - name: "Authentication"
+        in: "header"
+        required: false
+        type: "string"
+        description: "If you don't want rate limitation you have to provide the magic\
+          \ key"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Restaurant"
+    post:
+      summary: "Create restaurant"
+      parameters: []
+      responses:
+        201:
+          description: "Status 201"
+          schema:
+            $ref: "#/definitions/Restaurant (partial)"
+        406:
+          description: "Malformed json"
+  /restaurants/{restaurantId}:
+    get:
+      summary: "Get one restaurant"
+      parameters: []
+      responses:
+        200:
+          description: "Restaurant exists"
+          schema:
+            $ref: "#/definitions/Restaurant"
+        404:
+          description: "If the restaurant does not exist"
+    put:
+      summary: "Update restaurant (entirely)"
+      consumes: []
+      parameters:
+      - name: "Authentication"
+        in: "header"
+        required: false
+        type: "string"
+        description: "The magic key"
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Restaurant (partial)"
+      responses:
+        202:
+          description: "Status 202"
+          schema:
+            $ref: "#/definitions/Restaurant"
+          headers:
+            Authentication:
+              type: "string"
+              description: "The magic key"
+              x-example: "ABCDEFGHIJ"
+        401:
+          description: "You have to provide the magic key"
+        404:
+          description: "Status 404"
+    patch:
+      summary: "Update Restaurant (partially)"
+      consumes: []
+      parameters:
+      - name: "Authentication"
+        in: "header"
+        required: false
+        type: "string"
+        description: "The magic key"
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Restaurant (partial)"
+      responses:
+        202:
+          description: "Status 202"
+          schema:
+            $ref: "#/definitions/Restaurant"
+        404:
+          description: "If it does not exists"
+    parameters:
+    - name: "restaurantId"
+      in: "path"
+      required: true
+      type: "string"
+  /magic-key:
+    get:
+      summary: "Get the magic key"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            type: "string"
+            example: "ABCDEFGH"
+          examples:
+            application/json: "ABCDEFGH"
+definitions:
+  Restaurant:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      city:
+        type: "string"
+  Restaurant (partial):
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      city:
+        type: "string"

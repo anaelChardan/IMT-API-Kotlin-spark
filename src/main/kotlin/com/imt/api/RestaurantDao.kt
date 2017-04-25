@@ -26,8 +26,4 @@ class RestaurantDao {
     fun update(id: Int, name: String) {
         restaurants.put(id, Restaurant(id, name))
     }
-
-    fun delete(id: Int) {
-        restaurants.remove(id)
-    }
 }
