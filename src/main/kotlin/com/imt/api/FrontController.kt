@@ -1,7 +1,9 @@
 package com.imt.api
 
-import com.imt.api.MapperService.Companion.dataToJson
-import com.imt.api.MapperService.Companion.isNumeric
+import com.imt.api.Entity.PartialRestaurant
+import com.imt.api.Entity.Restaurant
+import com.imt.api.UtilsService.Companion.dataToJson
+import com.imt.api.UtilsService.Companion.isNumeric
 import spark.Filter
 import spark.Spark.*
 
@@ -26,6 +28,14 @@ fun main(args: Array<String>) {
 
         get("") { req, res ->
             dataToJson(restaurantDao.restaurants.values)
+        }
+
+        post("")  { req, res ->
+            val body = req.body()
+
+            val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
+
+            dataToJson(restaurantDao.save(partialRestaurant.name, partialRestaurant.city))
         }
 
         get("/:id") { req, res ->
