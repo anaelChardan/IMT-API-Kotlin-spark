@@ -1,6 +1,7 @@
 package com.imt.api
 
 import com.imt.api.MapperService.Companion.dataToJson
+import com.imt.api.MapperService.Companion.isNumeric
 import spark.Filter
 import spark.Spark.*
 
@@ -28,13 +29,16 @@ fun main(args: Array<String>) {
         }
 
         get("/:id") { req, res ->
-            val restaurant = restaurantDao.findById(req.attribute("id"))
-
-            if (restaurant !== null) {
-                dataToJson(restaurant)
-            } else {
-                res.status(404)
+            val id = req.params("id")
+            if (id != null && isNumeric(id)) {
+                val restaurant = restaurantDao.findById(id.toInt())
+                if (restaurant !== null) {
+                    return@get dataToJson(restaurant)
+                }
             }
+
+            res.status(404)
+            ""
         }
     }
 }

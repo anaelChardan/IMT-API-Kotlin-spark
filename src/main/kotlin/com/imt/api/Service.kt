@@ -19,5 +19,13 @@ class MapperService {
             mapper.enable(SerializationFeature.INDENT_OUTPUT)
             return mapper.readValue(json, T::class.java)
         }
+
+        fun isNumeric(input: String): Boolean =
+            try {
+                input.toInt()
+                true
+            } catch (e: NumberFormatException) {
+                false
+            }
     }
 }
