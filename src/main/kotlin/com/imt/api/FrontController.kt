@@ -89,7 +89,7 @@ fun main(args: Array<String>) {
                         city = partialRestaurant.city!!
                     }
                     restaurantDao.update(id.toInt(), name, city)
-                    return@patch dataToJson(restaurant)
+                    return@patch dataToJson(restaurantDao.findById(id.toInt()))
                 }
             }
 
@@ -105,7 +105,7 @@ fun main(args: Array<String>) {
                 val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
                 if (restaurant !== null) {
                     restaurantDao.update(id.toInt(), partialRestaurant.name!!, partialRestaurant.city!!)
-                    return@put dataToJson(restaurant)
+                    return@put dataToJson(restaurantDao.findById(id.toInt()))
                 }
             }
 
