@@ -1,5 +1,6 @@
 package com.imt.api
 
+import com.imt.api.Entity.ErrorResponse
 import com.imt.api.Entity.PartialRestaurant
 import com.imt.api.Entity.PartialRestaurant.Companion.validate
 import com.imt.api.Entity.Restaurant
@@ -53,8 +54,7 @@ fun main(args: Array<String>) {
                 res.status(201)
                 dataToJson(restaurant)
             } else {
-                res.status(400)
-                ""
+                ErrorResponse.notFound(res)
             }
         }
 
@@ -67,8 +67,7 @@ fun main(args: Array<String>) {
                 }
             }
 
-            res.status(404)
-            ""
+            ErrorResponse.notFound(res)
         }
 
         patch("/:id") { req, res ->
@@ -83,8 +82,7 @@ fun main(args: Array<String>) {
                 }
             }
 
-            res.status(404)
-            ""
+            ErrorResponse.notFound(res)
         }
     }
 
