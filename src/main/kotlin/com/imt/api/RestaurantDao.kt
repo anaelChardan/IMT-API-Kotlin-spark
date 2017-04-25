@@ -5,14 +5,14 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class RestaurantDao {
     val restaurants = hashMapOf(
-        0 to Restaurant(id = 0, name = "Le grosse bouf")
+        0 to Restaurant(id = 0, name = "Le grosse bouf", city = "Nantes")
     )
 
     var lastId: AtomicInteger = AtomicInteger(restaurants.size - 1)
 
-    fun save(name: String) {
+    fun save(name: String, city: String) {
         val id = lastId.incrementAndGet()
-        restaurants.put(id, Restaurant(id, name = name))
+        restaurants.put(id, Restaurant(id, name = name, city = city))
     }
 
     fun findById(id: Int): Restaurant? {
@@ -23,7 +23,7 @@ class RestaurantDao {
         return restaurants.values.find { it.name == name }
     }
 
-    fun update(id: Int, name: String) {
-        restaurants.put(id, Restaurant(id, name))
+    fun update(id: Int, name: String, city: String) {
+        restaurants.put(id, Restaurant(id, name, city))
     }
 }
