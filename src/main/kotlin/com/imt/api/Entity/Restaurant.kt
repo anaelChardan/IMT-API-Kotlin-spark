@@ -1,3 +1,3 @@
 package com.imt.api.Entity
 
-data class Restaurant(val name: String, val stars: String, val id: Int)
+data class Restaurant(val id: Int, val name: String)
