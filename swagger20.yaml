@@ -25,6 +25,11 @@ paths:
         type: "string"
         description: "If you don't want rate limitation you have to provide the magic\
           \ key"
+      - name: "MySuperID"
+        in: "header"
+        required: true
+        type: "string"
+        description: "A cool ID"
       responses:
         200:
           description: "Status 200"
@@ -32,6 +37,11 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Restaurant"
+        400:
+          description: "If you don't provide your super ID"
+        429:
+          description: "You must provide the magic key because you reach the rate\
+            \ limitation"
     post:
       summary: "Create restaurant"
       parameters: []
@@ -40,7 +50,7 @@ paths:
           description: "Status 201"
           schema:
             $ref: "#/definitions/Restaurant (partial)"
-        406:
+        400:
           description: "Malformed json"
   /restaurants/{restaurantId}:
     get:
@@ -68,8 +78,8 @@ paths:
         schema:
           $ref: "#/definitions/Restaurant (partial)"
       responses:
-        202:
-          description: "Status 202"
+        200:
+          description: "Status 200"
           schema:
             $ref: "#/definitions/Restaurant"
           headers:

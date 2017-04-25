@@ -7,6 +7,7 @@ import com.imt.api.UtilsService.Companion.dataToJson
 import com.imt.api.UtilsService.Companion.isNumeric
 import spark.Filter
 import spark.Spark.*
+import kotlin.collections.*
 
 val restaurantDao = RestaurantDao()
 val magicKey = "THIS_IS_A_SUPER_BADASS_MAGIC_KEY"
@@ -62,6 +63,22 @@ fun main(args: Array<String>) {
                 val restaurant = restaurantDao.findById(id.toInt())
                 if (restaurant !== null) {
                     return@get dataToJson(restaurant)
+                }
+            }
+
+            res.status(404)
+            ""
+        }
+
+        patch("/:id") { req, res ->
+            val id = req.params("id")
+            if (id != null && isNumeric(id)) {
+                val restaurant = restaurantDao.findById(id.toInt())
+                val body = req.body()
+                val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
+                if (restaurant !== null && partialRestaurant !== null) {
+                    restaurantDao.update(id.toInt(), partialRestaurant.name, partialRestaurant.city)
+                    return@patch dataToJson(restaurant)
                 }
             }
 
