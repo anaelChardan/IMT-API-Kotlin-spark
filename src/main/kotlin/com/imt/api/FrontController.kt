@@ -1,11 +1,14 @@
 package com.imt.api
 
 import com.imt.api.Entity.PartialRestaurant
+import com.imt.api.Entity.PartialRestaurant.Companion.validate
+import com.imt.api.Entity.Restaurant
 import com.imt.api.UtilsService.Companion.dataToJson
 import com.imt.api.UtilsService.Companion.isNumeric
 import spark.Filter
 import spark.Request
 import spark.Spark.*
+import kotlin.collections.*
 
 val restaurantDao = RestaurantDao()
 val magicKey = "THIS_IS_A_SUPER_BADASS_MAGIC_KEY"
@@ -22,7 +25,7 @@ fun checkSecurity(req: Request): Boolean {
 fun main(args: Array<String>) {
     port(3000)
 
-    after(Filter({ req, res ->
+    after(Filter({ _, res ->
         res.type("application/json")
     }))
 
@@ -60,7 +63,14 @@ fun main(args: Array<String>) {
 
             val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
 
-            dataToJson(restaurantDao.save(partialRestaurant.name, partialRestaurant.city))
+            if (validate(partialRestaurant)) {
+                val restaurant = restaurantDao.save(partialRestaurant.name!!, partialRestaurant.city!!)
+                res.status(201)
+                dataToJson(restaurant)
+            } else {
+                res.status(400)
+                ""
+            }
         }
 
         get("/:id") { req, res ->
@@ -75,10 +85,52 @@ fun main(args: Array<String>) {
             res.status(404)
             ""
         }
+
+        patch("/:id") { req, res ->
+            val id = req.params("id")
+            if (id != null && isNumeric(id)) {
+                val restaurant = restaurantDao.findById(id.toInt())
+                val body = req.body()
+                val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
+                if (restaurant !== null) {
+                    var name = restaurant.name
+                    if (partialRestaurant.name !== null)
+                    {
+                        name = partialRestaurant.name!!
+                    }
+                    var city = restaurant.city
+                    if (partialRestaurant.city !== null)
+                    {
+                        city = partialRestaurant.city!!
+                    }
+                    restaurantDao.update(id.toInt(), name, city)
+                    return@patch dataToJson(restaurantDao.findById(id.toInt()))
+                }
+            }
+
+            res.status(404)
+            ""
+        }
+
+        put("/:id") { req, res ->
+            val id = req.params("id")
+            if (id != null && isNumeric(id)) {
+                val restaurant = restaurantDao.findById(id.toInt())
+                val body = req.body()
+                val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
+                if (restaurant !== null) {
+                    restaurantDao.update(id.toInt(), partialRestaurant.name!!, partialRestaurant.city!!)
+                    return@put dataToJson(restaurantDao.findById(id.toInt()))
+                }
+            }
+
+            res.status(404)
+            ""
+        }
     }
 
     path("magic-key") {
-        get("") { req, res ->
+        get("") { _, _ ->
             dataToJson(magicKey)
         }
     }
