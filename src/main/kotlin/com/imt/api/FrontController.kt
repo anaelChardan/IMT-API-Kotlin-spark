@@ -27,16 +27,14 @@ fun main(args: Array<String>) {
     path("restaurants") {
         get("") { req, res ->
             if (req.headers("MySuperID") == null) {
-                res.status(400)
-                return@get ""
+                return@get ErrorResponse.badRequest(res)
             }
 
             val id = req.headers("MySuperID")
 
             if (ipsCall.containsKey(id)) {
                 if (ipsCall.getValue(id) == limitation) {
-                    res.status(429)
-                    return@get ""
+                    return@get ErrorResponse.tooManyRequests(res)
                 }
             }
 
