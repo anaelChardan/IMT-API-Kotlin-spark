@@ -1,10 +1,10 @@
 package com.imt.api
 
 import com.imt.api.Entity.PartialRestaurant
-import com.imt.api.Entity.Restaurant
 import com.imt.api.UtilsService.Companion.dataToJson
 import com.imt.api.UtilsService.Companion.isNumeric
 import spark.Filter
+import spark.Request
 import spark.Spark.*
 
 val restaurantDao = RestaurantDao()
@@ -13,6 +13,11 @@ val magicKey = "THIS_IS_A_SUPER_BADASS_MAGIC_KEY"
 var ipsCall: HashMap<String, Int> = HashMap()
 val limitation: Int = 4
 
+fun checkSecurity(req: Request): Boolean {
+    val authentication = req.headers("Authentication")
+
+    return !(authentication == null && magicKey != authentication)
+}
 
 fun main(args: Array<String>) {
     port(3000)
@@ -30,19 +35,28 @@ fun main(args: Array<String>) {
 
             val id = req.headers("MySuperID")
 
-            if (ipsCall.containsKey(id)) {
-                if (ipsCall.getValue(id) == limitation) {
-                    res.status(429)
-                    return@get ""
+            if (!checkSecurity(req)) {
+                if (ipsCall.containsKey(id)) {
+                    if (ipsCall.getValue(id) == limitation) {
+                        res.status(429)
+                        return@get ""
+                    }
                 }
+
+                ipsCall[id] = ipsCall.getOrElse(id, { 0 }) + 1
             }
 
-            ipsCall[id] = ipsCall.getOrElse(id, { 0 }) + 1
-            dataToJson(restaurantDao.restaurants.values)
+            val page = if (req.queryParams("page") == null)  1 else req.queryParams("page").toInt()
+            dataToJson(restaurantDao.getPage(page).values)
         }
 
         post("")  { req, res ->
             val body = req.body()
+
+            if (!checkSecurity(req)) {
+                res.status(401)
+                ""
+            }
 
             val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
 
