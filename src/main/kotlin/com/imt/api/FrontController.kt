@@ -76,8 +76,8 @@ fun main(args: Array<String>) {
                 val restaurant = restaurantDao.findById(id.toInt())
                 val body = req.body()
                 val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
-                if (restaurant !== null && partialRestaurant !== null) {
-                    restaurantDao.update(id.toInt(), partialRestaurant.name, partialRestaurant.city)
+                if (restaurant !== null) {
+                    restaurantDao.update(id.toInt(), partialRestaurant.name!!, partialRestaurant.city!!)
                     return@patch dataToJson(restaurant)
                 }
             }
