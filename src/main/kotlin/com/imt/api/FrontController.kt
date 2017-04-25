@@ -19,7 +19,7 @@ val limitation: Int = 4
 fun main(args: Array<String>) {
     port(3000)
 
-    after(Filter({ req, res ->
+    after(Filter({ _, res ->
         res.type("application/json")
     }))
 
@@ -50,6 +50,7 @@ fun main(args: Array<String>) {
 
             if (validate(partialRestaurant)) {
                 val restaurant = restaurantDao.save(partialRestaurant.name!!, partialRestaurant.city!!)
+                res.status(201)
                 dataToJson(restaurant)
             } else {
                 res.status(400)
@@ -88,7 +89,7 @@ fun main(args: Array<String>) {
     }
 
     path("magic-key") {
-        get("") { req, res ->
+        get("") { _, _ ->
             dataToJson(magicKey)
         }
     }
