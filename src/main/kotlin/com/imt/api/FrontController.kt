@@ -36,10 +36,6 @@ fun main(args: Array<String>) {
                 res.status(404)
             }
         }
-
-        delete("") { req, res ->
-
-        }
     }
 }
 
