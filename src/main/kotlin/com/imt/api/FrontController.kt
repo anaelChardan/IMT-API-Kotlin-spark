@@ -1,5 +1,6 @@
 package com.imt.api
 
+import com.imt.api.Entity.ErrorResponse
 import com.imt.api.Entity.PartialRestaurant
 import com.imt.api.Entity.PartialRestaurant.Companion.validate
 import com.imt.api.Entity.Restaurant
@@ -32,19 +33,17 @@ fun main(args: Array<String>) {
     path("restaurants") {
         get("") { req, res ->
             if (req.headers("MySuperID") == null) {
-                res.status(400)
-                return@get ""
+                return@get ErrorResponse.badRequest(res)
             }
 
             val id = req.headers("MySuperID")
 
-            if (!checkSecurity(req)) {
-                if (ipsCall.containsKey(id)) {
-                    if (ipsCall.getValue(id) == limitation) {
-                        res.status(429)
-                        return@get ""
-                    }
+            if (!checkSecurity(req)) {if (ipsCall.containsKey(id)) {
+                if (ipsCall.getValue(id) == limitation) {
+
+                    return@get ErrorResponse.tooManyRequests(res)
                 }
+            }
 
                 ipsCall[id] = ipsCall.getOrElse(id, { 0 }) + 1
             }
@@ -68,8 +67,7 @@ fun main(args: Array<String>) {
                 res.status(201)
                 dataToJson(restaurant)
             } else {
-                res.status(400)
-                ""
+                ErrorResponse.notFound(res)
             }
         }
 
@@ -82,8 +80,7 @@ fun main(args: Array<String>) {
                 }
             }
 
-            res.status(404)
-            ""
+            ErrorResponse.notFound(res)
         }
 
         patch("/:id") { req, res ->
@@ -114,8 +111,7 @@ fun main(args: Array<String>) {
                 }
             }
 
-            res.status(404)
-            ""
+            ErrorResponse.notFound(res)
         }
 
         put("/:id") { req, res ->
