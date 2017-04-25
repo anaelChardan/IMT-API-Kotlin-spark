@@ -1,6 +1,7 @@
 package com.imt.api
 
 import com.imt.api.Entity.PartialRestaurant
+import com.imt.api.Entity.PartialRestaurant.Companion.validate
 import com.imt.api.Entity.Restaurant
 import com.imt.api.UtilsService.Companion.dataToJson
 import com.imt.api.UtilsService.Companion.isNumeric
@@ -46,7 +47,13 @@ fun main(args: Array<String>) {
 
             val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
 
-            dataToJson(restaurantDao.save(partialRestaurant.name, partialRestaurant.city))
+            if (validate(partialRestaurant)) {
+                val restaurant = restaurantDao.save(partialRestaurant.name!!, partialRestaurant.city!!)
+                dataToJson(restaurant)
+            } else {
+                res.status(400)
+                ""
+            }
         }
 
         get("/:id") { req, res ->

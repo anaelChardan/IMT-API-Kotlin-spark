@@ -10,9 +10,10 @@ class RestaurantDao {
 
     var lastId: AtomicInteger = AtomicInteger(restaurants.size - 1)
 
-    fun save(name: String, city: String) {
+    fun save(name: String, city: String): Restaurant? {
         val id = lastId.incrementAndGet()
         restaurants.put(id, Restaurant(id, name = name, city = city))
+        return restaurants[id]
     }
 
     fun findById(id: Int): Restaurant? {
