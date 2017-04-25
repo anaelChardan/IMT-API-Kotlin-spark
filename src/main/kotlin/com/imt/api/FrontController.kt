@@ -88,6 +88,12 @@ fun main(args: Array<String>) {
 
         patch("/:id") { req, res ->
             val id = req.params("id")
+
+            if (!checkSecurity(req)) {
+                res.status(401)
+                ""
+            }
+
             if (id != null && isNumeric(id)) {
                 val restaurant = restaurantDao.findById(id.toInt())
                 val body = req.body()
@@ -114,6 +120,12 @@ fun main(args: Array<String>) {
 
         put("/:id") { req, res ->
             val id = req.params("id")
+
+            if (!checkSecurity(req)) {
+                res.status(401)
+                ""
+            }
+
             if (id != null && isNumeric(id)) {
                 val restaurant = restaurantDao.findById(id.toInt())
                 val body = req.body()
