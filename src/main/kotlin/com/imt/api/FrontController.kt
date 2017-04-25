@@ -77,12 +77,38 @@ fun main(args: Array<String>) {
                 val body = req.body()
                 val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
                 if (restaurant !== null) {
-                    restaurantDao.update(id.toInt(), partialRestaurant.name!!, partialRestaurant.city!!)
+                    var name = restaurant.name
+                    if (partialRestaurant.name !== null)
+                    {
+                        name = partialRestaurant.name!!
+                    }
+                    var city = restaurant.city
+                    if (partialRestaurant.city !== null)
+                    {
+                        city = partialRestaurant.city!!
+                    }
+                    restaurantDao.update(id.toInt(), name, city)
                     return@patch dataToJson(restaurant)
                 }
             }
 
             ErrorResponse.notFound(res)
+        }
+
+        put("/:id") { req, res ->
+            val id = req.params("id")
+            if (id != null && isNumeric(id)) {
+                val restaurant = restaurantDao.findById(id.toInt())
+                val body = req.body()
+                val partialRestaurant = UtilsService.jsonToData<PartialRestaurant>(body)
+                if (restaurant !== null) {
+                    restaurantDao.update(id.toInt(), partialRestaurant.name!!, partialRestaurant.city!!)
+                    return@put dataToJson(restaurant)
+                }
+            }
+
+            res.status(404)
+            ""
         }
     }
 
